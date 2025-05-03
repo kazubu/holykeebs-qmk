@@ -47,15 +47,18 @@ const char* hk_pointer_kind_to_string(hk_pointer_kind kind) {
 
 void debug_hk_mouse_report(const char* prefix, const report_mouse_t* report) {
     #    ifdef CONSOLE_ENABLE
+    #    ifdef DEBUG_CONSOLE_ENABLE
         printf("debug_hk_mouse_report (%s): { x=%d y=%d v=%d h=%d }\n",
                 prefix,
                 report->x, report->y, report->v, report->h
         );
+    #    endif // DEBUG_CONSOLE_ENABLE
     #    endif // CONSOLE_ENABLE
 }
 
 void debug_hk_state_to_console(hk_state_t* state) {
     #    ifdef CONSOLE_ENABLE
+    #    ifdef DEBUG_CONSOLE_ENABLE
         printf("debug_hk: state = {\n"
                 "\tis_main_side=%u\n"
                 "\tsetting_default_scale=%u\n"
@@ -88,5 +91,6 @@ void debug_hk_state_to_console(hk_state_t* state) {
                 hk_pointer_kind_to_string(state->peripheral.pointer_kind), hk_cursor_mode_to_string(state->peripheral.cursor_mode), state->peripheral.drag_scroll, hk_scroll_mode_to_string(state->peripheral.scroll_lock),
                 state->peripheral.pointer_default_multiplier, state->peripheral.pointer_sniping_multiplier, state->peripheral.pointer_scroll_buffer_size
         );
+    #    endif // DEBUG_CONSOLE_ENABLE
     #    endif // CONSOLE_ENABLE
 }
