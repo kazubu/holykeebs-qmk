@@ -228,7 +228,7 @@ __attribute__((weak)) bool process_record_keymap(uint16_t keycode, keyrecord_t* 
 void hk_process_scroll(const hk_pointer_state_t* pointer_state, report_mouse_t* mouse_report) {
     if (pointer_state->drag_scroll) {
         mouse_report->h = mouse_report->x;
-        mouse_report->v = mouse_report->y;
+        mouse_report->v = mouse_report->y * -1;
         mouse_report->x = 0;
         mouse_report->y = 0;
     }
