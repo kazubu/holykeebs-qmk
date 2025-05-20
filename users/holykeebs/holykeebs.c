@@ -83,7 +83,7 @@ static void hk_configure_pimoroni_common(hk_pointer_state_t* state) {
 static void hk_configure_trackpoint_common(hk_pointer_state_t* state) {
     state->pointer_default_multiplier = 2.0;
     state->pointer_sniping_multiplier = 1.0;
-    state->pointer_scroll_buffer_size = 5;
+    state->pointer_scroll_buffer_size = 3;
 }
 
 static void hk_configure_cirque_common(hk_pointer_state_t* state) {
