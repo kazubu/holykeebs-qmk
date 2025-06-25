@@ -1,0 +1,65 @@
+name: Build QMK firmware
+
+on: [push, workflow_dispatch]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Userspace Firmware
+    runs-on: ubuntu-latest
+    container: qmkfm/base_container
+
+    steps:
+      - name: Checkout Repos
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          submodules: recursive
+
+      - name: Install QMK CLI
+        run: |
+          python3 -m pip install --upgrade qmk
+          python3 -m pip install -r requirements.txt
+
+      - name: Configure QMK CLI
+        run: |
+          qmk config user.qmk_home=$GITHUB_WORKSPACE
+
+      - name: Preparation command
+        if: inputs.preparation_command != ''
+        run: |
+          ${{ inputs.preparation_command }}
+
+      - name: Build
+        run: |
+          bash build.sh || touch .failed
+          # Exit with failure if the compilation stage failed
+          [ ! -f .failed ] || exit 1
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        if: always() && !cancelled()
+        continue-on-error: true
+        with:
+          name: Firmware
+          path: |
+            *.bin
+            *.hex
+            *.uf2
+
+      - name: Generate Release
+        uses: softprops/action-gh-release@v2
+        if: always() && !cancelled()
+        with:
+          token: ${{ github.token }}
+          name: Latest QMK Firmware
+          tag_name: ${{ inputs.release_name || 'latest' }}
+          fail_on_unmatched_files: false
+          draft: false
+          prerelease: false
+          files: |
+            **/*.hex
+            **/*.bin
+            **/*.uf2
