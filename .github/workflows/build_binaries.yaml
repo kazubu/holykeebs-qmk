@@ -60,6 +60,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            **/*.hex
-            **/*.bin
-            **/*.uf2
+            *.hex
+            *.bin
+            *.uf2
