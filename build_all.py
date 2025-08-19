@@ -83,7 +83,7 @@ class Command:
 
 def build_commands():
     commands = []
-    skip_pointing_devices =[('trackpoint', 'trackpoint'), ('cirque35', 'cirque40'), ('cirque40', 'cirque35')]
+    skip_pointing_devices =[('cirque35', 'cirque40'), ('cirque40', 'cirque35')]
     for console_enabled in [True, False]:
         for kb in ['crkbd/rev1', 'holykeebs/spankbd', 'lily58/rev1', 'holykeebs/sweeq']:
             for left_pointing_device in ['trackpoint', 'trackball', 'cirque35', 'cirque40', 'tps43', '']:
@@ -140,27 +140,40 @@ def build_commands():
 
 def main() -> int:
     commands = [
-        Command('keyball/keyball39', 'via'),
-        Command('keyball/keyball44', 'via'),
-        Command('keyball/keyball61', 'via'),
+        # Command('keyball/keyball39', 'via'),
+        # Command('keyball/keyball44', 'via'),
+        # Command('keyball/keyball61', 'via'),
     ]
     for command in build_commands():
         command.prepend_argument('USER_NAME=holykeebs')
         commands.append(command)
 
-    os.makedirs('build_all', exist_ok=True)
-    commands_file = open('build_all/commands.txt', 'w')
+    base_dir = 'build_all'
+    build_debug = True
+    os.makedirs(f'{base_dir}/debug', exist_ok=True)
+    os.makedirs(f'{base_dir}/previous', exist_ok=True)
+    commands_file = open(f'{base_dir}/commands.txt', 'w')
     for command in commands:
-        if os.path.exists(f'build_all/{command.file_name()}.uf2'):
-            print(f'Skipping {command.file_name()} (already built)')
+        if command.file_name().startswith('debug') and not build_debug:
+            print(f'Skipping {command.file_name()} as build_debug is False')
             continue
+
+        if command.file_name().startswith('debug'):
+            destination = f'{base_dir}/debug/{command.file_name()}.uf2'
+        else:
+            destination = f'{base_dir}/{command.file_name()}.uf2'
+
+        if os.path.exists(destination):
+            print(f'File {destination} already exists, moving to previous')
+            os.rename(destination, f'{base_dir}/previous/{command.file_name()}.uf2')
 
         command.add_argument_raw('-j20')
         command.prepend_argument(f'TARGET={command.file_name()}')
         print(f'Making {command.file_name()}: {command.build()}')
         run_command_check_output(command.build().split())
-        # move the file to uf2/
-        os.rename(f'{command.file_name()}.uf2', f'build_all/{command.file_name()}.uf2')
+
+        print(f'Moving {command.file_name()}.uf2 to {destination}')
+        os.rename(f'{command.file_name()}.uf2', destination)
         commands_file.write(f'{command.file_name()}: {command.build()}\n')
     return 0
 
