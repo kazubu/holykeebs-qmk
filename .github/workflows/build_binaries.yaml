@@ -9,19 +9,14 @@ jobs:
   build:
     name: Build Userspace Firmware
     runs-on: ubuntu-latest
-    container: qmkfm/base_container
+    container: ghcr.io/qmk/qmk_cli
 
     steps:
       - name: Checkout Repos
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ github.token }}
           submodules: recursive
-
-      - name: Install QMK CLI
-        run: |
-          python3 -m pip install --upgrade qmk
-          python3 -m pip install -r requirements.txt
 
       - name: Configure QMK CLI
         run: |
