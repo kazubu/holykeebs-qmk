@@ -450,8 +450,8 @@ void hk_process_mouse_report(const hk_pointer_state_t* pointer_state, report_mou
 
     // First, scale the mouse movement.
     const report_mouse_t mouse_report_copy = *mouse_report;
-    const float new_x = scale_movement(pointer_state, mouse_report->x);
-    const float new_y = scale_movement(pointer_state, mouse_report->y);
+    const float new_x = scale_movement(pointer_state, mouse_report->x) + rounding_carry_x;
+    const float new_y = scale_movement(pointer_state, mouse_report->y) + rounding_carry_y;
 
     // Accumulate any difference from next integer (quantization).
     rounding_carry_x = new_x - (int)new_x;
@@ -476,26 +476,16 @@ void hk_process_mouse_report(const hk_pointer_state_t* pointer_state, report_mou
     g_hk_state.dirty = true;
 }
 
-report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    if (!g_hk_state.is_main_side) {
-        return pointing_device_task_keymap(mouse_report);
-    }
-
-    // We get here only on the main side.
-    hk_process_mouse_report(&g_hk_state.main, &mouse_report);
-    g_hk_state.display.last_mouse = mouse_report;
-
-    return pointing_device_task_keymap(mouse_report);
-}
-
 #if defined(SPLIT_POINTING_ENABLE) && defined(POINTING_DEVICE_COMBINED)
+
 report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, report_mouse_t right_report) {
+    // pointing_device_task_* is entered only on the main side, ensure that.
     if (!g_hk_state.is_main_side) {
         report_mouse_t report = pointing_device_combine_reports(left_report, right_report);
         return pointing_device_task_combined_keymap(report);
     }
 
-    // We get here only on the main side. Use is_keyboard_left to know which report is main and which is peripheral.
+    // Use is_keyboard_left to know which report is main and which is peripheral.
     hk_process_mouse_report(&g_hk_state.main, is_keyboard_left() ? &left_report : &right_report);
     hk_process_mouse_report(&g_hk_state.peripheral, is_keyboard_left() ? &right_report : &left_report);
 
@@ -503,6 +493,21 @@ report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, re
     g_hk_state.display.last_mouse = report;
     return pointing_device_task_combined_keymap(report);
 }
+
+#else
+
+report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    // pointing_device_task_* is entered only on the main side, ensure that.
+    if (!g_hk_state.is_main_side) {
+        return pointing_device_task_keymap(mouse_report);
+    }
+
+    hk_process_mouse_report(&g_hk_state.main, &mouse_report);
+    g_hk_state.display.last_mouse = mouse_report;
+
+    return pointing_device_task_keymap(mouse_report);
+}
+
 #endif
 
 // clang-format off
