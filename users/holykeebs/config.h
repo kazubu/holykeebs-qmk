@@ -1,8 +1,12 @@
 #pragma once
 
 /* Reset. */
+#ifndef RP2040_BOOTLOADER_DOUBLE_TAP_RESET
 #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET
+#endif
+#ifndef RP2040_BOOTLOADER_DOUBLE_TAP_RESET_TIMEOUT
 #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_TIMEOUT 1000U
+#endif
 
 #define MOUSE_EXTENDED_REPORT
 #define WHEEL_EXTENDED_REPORT
@@ -28,7 +32,9 @@
         #error "HK_MASTER_LEFT or HK_MASTER_RIGHT not defined in rules.mk"
     #endif
 
+    #ifdef SERIAL_USART_TX_PIN
     #define SERIAL_USART_TX_PIN GP1
+    #endif
 
     // This helps in setups where the keyboard isn't recognized on boot if it's already plugged in.
     #define SPLIT_WATCHDOG_ENABLE
