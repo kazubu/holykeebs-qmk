@@ -1,0 +1,5 @@
+{
+	"keyboard": "ai03/altair_x",
+	"keymap": "via",
+	"modules": ["bskaplou/companion_hid"]
+}

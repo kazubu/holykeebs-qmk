@@ -90,23 +90,5 @@ void matrix_scan_user(void) {
 layer_state_t layer_state_set_user(layer_state_t state) {
   state = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 
-  uint8_t layer = biton32(state);
-  switch(layer) {
-    case _MOUSE:
-#ifdef CONSOLE_ENABLE
-      uprintf("Layer_MOUSE_%d\n", layer);
-#endif
-      break;
-    case _POINTER:
-#ifdef CONSOLE_ENABLE
-      uprintf("Layer_POINTER_%d\n", layer);
-#endif
-      break;
-    default:
-#ifdef CONSOLE_ENABLE
-      uprintf("Layer_%d\n", layer);
-#endif
-  }
-
   return state;
 }

@@ -1,0 +1,5 @@
+{
+	"keyboard": "crkbd/rev1",
+	"keymap": "via",
+	"modules": ["bskaplou/companion_hid"]
+}
