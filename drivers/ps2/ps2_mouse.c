@@ -57,6 +57,13 @@ void ps2_mouse_init(void) {
 
     ps2_host_init();
 
+#ifdef SK8707_RESET_PIN
+    gpio_set_pin_output(SK8707_RESET_PIN);
+    gpio_write_pin_high(SK8707_RESET_PIN);
+    wait_ms(10); // wait for powering up
+    gpio_write_pin_low(SK8707_RESET_PIN);
+#endif
+
     wait_ms(PS2_MOUSE_INIT_DELAY); // wait for powering up
 
     PS2_MOUSE_SEND(PS2_MOUSE_RESET, "ps2_mouse_init: sending reset");
