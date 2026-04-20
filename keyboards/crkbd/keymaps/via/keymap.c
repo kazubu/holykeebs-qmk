@@ -30,6 +30,7 @@ enum layers {
 };
 
 #define AUTO_MOUSE_LAYER _MOUSE
+#define ALTTAB_LAYER _LOWER
 #define _DRSCL HK_DRAGSCROLL_MODE
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -143,8 +144,14 @@ void matrix_scan_user(void) {
   };
 }
 
+static bool alt_held_for_alttab_layer = false;
+
 layer_state_t layer_state_set_user(layer_state_t state) {
   state = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+  if(!layer_state_cmp(state, ALTTAB_LAYER) && alt_held_for_alttab_layer) {
+    unregister_mods(MOD_BIT(KC_LALT));
+    alt_held_for_alttab_layer = false;
+  }
 
   uint8_t layer = biton32(state);
   switch(layer) {
@@ -161,4 +168,20 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   }
 
   return state;
+}
+
+bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case KC_TAB:
+      if(record->event.pressed && layer_state_is(ALTTAB_LAYER)) {
+        if(!alt_held_for_alttab_layer) {
+          register_mods(MOD_BIT(KC_LALT));
+          alt_held_for_alttab_layer = true;
+        }
+      }
+
+      return true;
+    default:
+      return true;
+  }
 }
