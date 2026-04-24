@@ -32,7 +32,7 @@
         #error "HK_MASTER_LEFT or HK_MASTER_RIGHT not defined in rules.mk"
     #endif
 
-    #ifdef SERIAL_USART_TX_PIN
+    #ifndef SERIAL_USART_TX_PIN
     #define SERIAL_USART_TX_PIN GP1
     #endif
 
