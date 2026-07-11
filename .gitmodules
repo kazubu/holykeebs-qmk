@@ -27,4 +27,4 @@
 	branch = release/v8.2
 [submodule "modules/bskaplou"]
 	path = modules/bskaplou
-	url = https://github.com/bskaplou/qmk_modules
+	url = https://github.com/kazubu/bskaplou_qmk_modules
